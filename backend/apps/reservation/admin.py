@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
@@ -8,6 +9,22 @@ from .models import Reservation, Room
 class ReservationInline(admin.TabularInline):
     model = Reservation
     extra = 1
+
+
+class ReservationAdminForm(forms.ModelForm):
+    class Meta:
+        model = Reservation
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(ReservationAdminForm, self).__init__(*args, **kwargs)
+        instance = kwargs.get("instance")
+        if instance and instance.pk:
+            self.fields["room"].queryset = Room.objects.filter(
+                is_reserved=False
+            ) | Room.objects.filter(pk=instance.room.pk)
+        else:
+            self.fields["room"].queryset = Room.objects.filter(is_reserved=False)
 
 
 @admin.register(Room)
@@ -27,6 +44,8 @@ class RoomAdmin(admin.ModelAdmin):
 
 @admin.register(Reservation)
 class ReservationAdmin(admin.ModelAdmin):
+    form = ReservationAdminForm
+
     list_display = (
         "id",
         "room_link",

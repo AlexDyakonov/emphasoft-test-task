@@ -16,4 +16,10 @@ class Reservation(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, null=False)
-    ended_at = models.DateTimeField(null=True)
+    ended_at = models.DateTimeField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.room.is_reserved = True
+            self.room.save()
+        super().save(*args, **kwargs)

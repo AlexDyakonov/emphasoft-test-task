@@ -8,6 +8,11 @@ class RoomSerializer(serializers.ModelSerializer):
         model = Room
         fields = "__all__"
 
+    def validate_room(self, value):
+        if value.is_reserved:
+            raise serializers.ValidationError("Эта комната уже зарезервирована.")
+        return value
+
 
 class ReservationSerializer(serializers.ModelSerializer):
     class Meta:
