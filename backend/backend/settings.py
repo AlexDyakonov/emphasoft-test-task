@@ -37,8 +37,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # External
+    "rest_framework",
+    "rest_framework_swagger",
+    "drf_yasg",
     # Custom
     "apps.api",
+    "apps.reservation",
 ]
 
 MIDDLEWARE = [
