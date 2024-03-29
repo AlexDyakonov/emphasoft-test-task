@@ -1,4 +1,8 @@
 from django.contrib import admin
 from django.urls import include, path, re_path
 
-urlpatterns = []
+from .views import ReservationListView
+
+urlpatterns = [
+    path("reservations/", ReservationListView.as_view(), ""),
+]
