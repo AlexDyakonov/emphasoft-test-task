@@ -9,22 +9,20 @@ from .models import Reservation, Room
 class ReservationInline(admin.TabularInline):
     model = Reservation
     extra = 1
+    fields = ["user", "start_date", "end_date"]
 
 
-class ReservationAdminForm(forms.ModelForm):
-    class Meta:
-        model = Reservation
-        fields = "__all__"
-
-    def __init__(self, *args, **kwargs):
-        super(ReservationAdminForm, self).__init__(*args, **kwargs)
-        instance = kwargs.get("instance")
-        if instance and instance.pk:
-            self.fields["room"].queryset = Room.objects.filter(
-                is_reserved=False
-            ) | Room.objects.filter(pk=instance.room.pk)
-        else:
-            self.fields["room"].queryset = Room.objects.filter(is_reserved=False)
+class RoomAdmin(admin.ModelAdmin):
+    list_display = (
+        "number",
+        "cost_per_night",
+        "capacity",
+    )
+    search_fields = ("number",)
+    list_filter = ("capacity",)
+    inlines = [
+        ReservationInline,
+    ]
 
 
 @admin.register(Room)
@@ -33,10 +31,9 @@ class RoomAdmin(admin.ModelAdmin):
         "number",
         "cost_per_night",
         "capacity",
-        "is_reserved",
     )
     search_fields = ("number",)
-    list_filter = ("is_reserved", "capacity")
+    list_filter = ("capacity",)
     inlines = [
         ReservationInline,
     ]
@@ -44,28 +41,26 @@ class RoomAdmin(admin.ModelAdmin):
 
 @admin.register(Reservation)
 class ReservationAdmin(admin.ModelAdmin):
-    form = ReservationAdminForm
 
     list_display = (
         "id",
-        "room_link",
+        "room",
         "user",
-        "created_at",
-        "ended_at",
+        "start_date",
+        "end_date",
     )
-    list_filter = ("created_at",)
+    list_filter = (
+        "start_date",
+        "end_date",
+    )
     search_fields = (
         "room__number",
         "user__username",
     )
+    ordering = ("-start_date",)
 
     def room_link(self, obj):
-        link = reverse("admin:reservation_room_change", args=[obj.room.id])
+        link = reverse("admin:reservation_room_change", args=[obj.room.id])  #
         return format_html('<a href="{}">{}</a>', link, obj.room.number)
 
     room_link.short_description = "Room"
-
-    def user_info(self, obj):
-        return obj.user.get_full_name()
-
-    ordering = ("-created_at",)
