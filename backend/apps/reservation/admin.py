@@ -60,7 +60,7 @@ class ReservationAdmin(admin.ModelAdmin):
     ordering = ("-start_date",)
 
     def room_link(self, obj):
-        link = reverse("admin:reservation_room_change", args=[obj.room.id])  #
+        link = reverse("admin:reservation_room_change", args=[obj.room.id])
         return format_html('<a href="{}">{}</a>', link, obj.room.number)
 
     room_link.short_description = "Room"
