@@ -9,6 +9,8 @@ from .filters import RoomFilter
 from .models import Reservation, Room
 from .serializers import ReservationSerializer, RoomSerializer
 
+# Где посчитал нужным, выдал суперюзеру возможность видеть все, а пользователем только их
+
 
 class ReservationsListView(generics.ListAPIView):
     """
@@ -105,7 +107,7 @@ class ReservationCancelView(generics.UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         reservation = self.get_object()
-        if reservation.user != request.user:
+        if not request.user.is_superuser and reservation.user != request.user:
             return Response(
                 {"detail": "You do not have permission to cancel this reservation."},
                 status=status.HTTP_403_FORBIDDEN,

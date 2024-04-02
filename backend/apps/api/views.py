@@ -8,6 +8,9 @@ from .serializers import UserDetailSerializer, UserListSerializer
 
 User = get_user_model()
 
+# Так как я не создавал отдельного модуля для пользователей, поэтому сериализаторы и их логика тут прописана. По хорошему создать отдельный модуль
+# и все это перенести туда.
+
 
 class CustomAuthToken(ObtainAuthToken):
     """

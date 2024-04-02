@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models import Q
 
 
+# Модель комнаты не расширял, добавил только метод для проверки, свободна комната или нет
 class Room(models.Model):
     number = models.CharField(max_length=50)
     cost_per_night = models.DecimalField(max_digits=10, decimal_places=2)
@@ -20,6 +21,8 @@ class Room(models.Model):
         return self.number
 
 
+# Для брони нужна была модель резерва(брони)
+# Её вижу так: комната к которой относится бронь, пользователь, который её делает, дата начала и конца и статус (для отмены)
 class Reservation(models.Model):
     class Status(models.TextChoices):
         ACTIVE = "active", "Active"

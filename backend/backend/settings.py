@@ -4,6 +4,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+# Для хранения секретов предпочитаю использовать .env файл, поэтому дальше будет выглядеть так все
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,7 +29,10 @@ CORS_ORIGIN_ALLOW_ALL = os.getenv("CORS_ORIGIN_ALLOW_ALL", "False") == "True"
 CORS_ALLOW_CREDENTIALS = os.getenv("CORS_ALLOW_CREDENTIALS", "False") == "True"
 
 # Application definition
-
+# Стандартная админка не нравится, поэтому использую джаззмин.
+# Хотя там есть проблема с выходом (на 5 версии джанго), когда отправляется гет запрос, а должен быть пост (templates/admin/base.html фиксит проблему)
+# Для документации поставил сваггер и yasg который позволяет Docstring преобразовать в документацию апи
+# Все приложения в отдельный каталог app. У каждого рпиложения в файле apps.py изменяю название модуля
 INSTALLED_APPS = [
     "jazzmin",
     "django.contrib.admin",
@@ -80,7 +84,7 @@ WSGI_APPLICATION = "backend.wsgi.application"
 
 
 # Database
-# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+# Тут настройка для удобной работы и с SQLITE и с PostgreSQL. Локально предпочитаю sqlite (если возможно)
 
 DATABASES = (
     {
@@ -141,7 +145,7 @@ STATIC_URL = "/static/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static/staticfiles')]
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, "static/staticfiles")]
 
 MEDIA_URL = "/media/"
 

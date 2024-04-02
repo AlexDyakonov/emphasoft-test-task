@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import admin
+from django.contrib.staticfiles import views
 
 # Docs
 from django.urls import include, path, re_path
@@ -17,6 +18,7 @@ schema_view = get_schema_view(
     public=True,
     permission_classes=(permissions.AllowAny,),
 )
+
 urlpatterns = [
     # Docs
     path(
@@ -42,3 +44,8 @@ swagger_patterns = [
 
 if settings.DEBUG:
     urlpatterns += swagger_patterns
+
+if settings.DEBUG:
+    urlpatterns += [
+        re_path(r"^static/(?P<path>.*)$", views.serve),
+    ]
