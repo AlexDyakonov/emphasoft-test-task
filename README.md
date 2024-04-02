@@ -22,7 +22,7 @@
 git clone https://github.com/AlexDyakonov/emphasoft-test-task
 ```
 
-Меняем ветку на `dev`:
+Меняем ветку на `dev` (теперь не обязательно):
 ```
 cd emphasoft-test-task
 git checkout dev
