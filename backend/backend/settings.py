@@ -153,6 +153,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # DRF
+# Тут я указал, что по дефолту все запросы должны быть авторизованы
+# Поэтому гет пермишн меняю для тех эндпоинтов, где должны быть права просмотра всеми
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",

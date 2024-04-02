@@ -10,7 +10,9 @@ class Room(models.Model):
 
     def is_available(self, start_date, end_date):
         overlapping_reservations = self.reservations.filter(
-            Q(start_date__lte=end_date) & Q(end_date__gte=start_date)
+            Q(start_date__lte=end_date)
+            & Q(end_date__gte=start_date)
+            & Q(status=Reservation.Status.ACTIVE)
         ).exists()
         return not overlapping_reservations
 
@@ -19,9 +21,17 @@ class Room(models.Model):
 
 
 class Reservation(models.Model):
+    class Status(models.TextChoices):
+        ACTIVE = "active", "Active"
+        CANCELLED = "cancelled", "Cancelled"
+        COMPLETED = "completed", "Completed"
+
     room = models.ForeignKey(
         Room, related_name="reservations", on_delete=models.CASCADE
     )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()
+    status = models.CharField(
+        max_length=10, choices=Status.choices, default=Status.ACTIVE
+    )

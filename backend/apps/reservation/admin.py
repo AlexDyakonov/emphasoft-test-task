@@ -42,16 +42,11 @@ class RoomAdmin(admin.ModelAdmin):
 @admin.register(Reservation)
 class ReservationAdmin(admin.ModelAdmin):
 
-    list_display = (
-        "id",
-        "room",
-        "user",
-        "start_date",
-        "end_date",
-    )
+    list_display = ("id", "room", "user", "start_date", "end_date", "status")
     list_filter = (
         "start_date",
         "end_date",
+        "status",
     )
     search_fields = (
         "room__number",

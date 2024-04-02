@@ -9,7 +9,7 @@ from .models import Reservation, Room
 from .serializers import ReservationSerializer, RoomSerializer
 
 
-class ReservationListView(generics.ListAPIView):
+class ReservationsListView(generics.ListAPIView):
     serializer_class = ReservationSerializer
     permission_classes = [
         IsAuthenticated,
@@ -33,7 +33,7 @@ class RoomListView(generics.ListAPIView):
         return super().get_permissions()
 
 
-class ReserveRoomView(generics.CreateAPIView):
+class ReservationCreateView(generics.CreateAPIView):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
 
@@ -71,3 +71,26 @@ class AvailableRoomsView(generics.ListAPIView):
         if self.request.method == "GET":
             return [permissions.AllowAny()]
         return super().get_permissions()
+
+
+class ReservationCancelView(generics.UpdateAPIView):
+    queryset = Reservation.objects.all()
+    serializer_class = ReservationSerializer
+
+    def update(self, request, *args, **kwargs):
+        reservation = self.get_object()
+        if reservation.user != request.user:
+            return Response(
+                {"detail": "You do not have permission to cancel this reservation."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if reservation.status == Reservation.Status.CANCELLED:
+            return Response(
+                {"detail": "This reservation is already cancelled."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        reservation.status = Reservation.Status.CANCELLED
+        reservation.save()
+        return Response({"detail": "Reservation cancelled successfully."})
