@@ -10,6 +10,13 @@ User = get_user_model()
 
 
 class CustomAuthToken(ObtainAuthToken):
+    """
+    post:
+    Аутентификация пользователя по 'username' и 'password'.
+
+    Возвращает токен аутентификации и ID пользователя.
+    """
+
     def post(self, request, *args, **kwargs):
         response = super(CustomAuthToken, self).post(request, *args, **kwargs)
         token = Token.objects.get(key=response.data["token"])
@@ -17,6 +24,16 @@ class CustomAuthToken(ObtainAuthToken):
 
 
 class UserDetailView(generics.RetrieveUpdateAPIView):
+    """
+    Получить или обновить информацию пользователя по 'username'.
+
+    retrieve:
+    Возвращает детальную информацию о пользователе.
+
+    update:
+    Обновляет информацию о пользователе. Требует аутентификации.
+    """
+
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
     lookup_field = "username"
@@ -28,6 +45,16 @@ class UserDetailView(generics.RetrieveUpdateAPIView):
 
 
 class UserListView(generics.ListCreateAPIView):
+    """
+    Список пользователей или создание нового пользователя.
+
+    get:
+    Возвращает список всех пользователей суперюзеру. Требует аутентификации.
+
+    post:
+    Создает нового пользователя. Доступно без аутентификации.
+    """
+
     queryset = User.objects.all()
     serializer_class = UserListSerializer
 
@@ -37,6 +64,6 @@ class UserListView(generics.ListCreateAPIView):
         return super().get_permissions()
 
     def get_serializer_class(self):
-        if self.request.method == "POST":
+        if self.request.method == "POST" and self.request.user.is_superuser:
             return UserListSerializer
         return super().get_serializer_class()

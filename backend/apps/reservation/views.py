@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, permissions, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -10,10 +11,12 @@ from .serializers import ReservationSerializer, RoomSerializer
 
 
 class ReservationsListView(generics.ListAPIView):
+    """
+    get:
+    Возвращает список всех резерваций для суперпользователя или резервации текущего пользователя.
+    """
+
     serializer_class = ReservationSerializer
-    permission_classes = [
-        IsAuthenticated,
-    ]
 
     def get_queryset(self):
         if self.request.user.is_superuser:
@@ -22,6 +25,11 @@ class ReservationsListView(generics.ListAPIView):
 
 
 class RoomListView(generics.ListAPIView):
+    """
+    get:
+    Возвращает список всех комнат. Поддерживает фильтрацию по параметрам комнаты.
+    """
+
     serializer_class = RoomSerializer
     queryset = Room.objects.all()
     filter_backends = [DjangoFilterBackend]
@@ -34,6 +42,12 @@ class RoomListView(generics.ListAPIView):
 
 
 class ReservationCreateView(generics.CreateAPIView):
+    """
+    post:
+    Создает новую резервацию, если выбранная комната доступна в указанные даты.
+    Возвращает ошибку, если комната не доступна.
+    """
+
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
 
@@ -53,6 +67,12 @@ class ReservationCreateView(generics.CreateAPIView):
 
 
 class AvailableRoomsView(generics.ListAPIView):
+    """
+    get:
+    Возвращает список комнат, доступных для бронирования в указанный интервал дат.
+    Требует передачи параметров `start_date` и `end_date`.
+    """
+
     serializer_class = RoomSerializer
 
     def get_queryset(self):
@@ -74,6 +94,12 @@ class AvailableRoomsView(generics.ListAPIView):
 
 
 class ReservationCancelView(generics.UpdateAPIView):
+    """
+    patch:
+    Отменяет резервацию для текущего пользователя. Резервация может быть отменена только ее владельцем.
+    Возвращает ошибку, если пытается отменить резервацию другого пользователя или резервация уже отменена.
+    """
+
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
 

@@ -1,6 +1,21 @@
 version: "3"
 
 services:
+  backend:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./docker/backend/Dockerfile
+    command:
+      - ./docker/backend/run.sh
+    container_name: backend
+    env_file:
+      - .env
+    volumes:
+      - ./media:/backend/media:consistent
+      - ./static:/backend/static:consistent
+    depends_on:
+      - database
   database:
     restart: unless-stopped
     image: postgres:15
@@ -16,3 +31,19 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  nginx:
+    restart: unless-stopped
+    build:
+      dockerfile: ./Dockerfile
+      context: ./docker/nginx/
+    container_name: nginx
+    volumes:
+      - ./static:/backend/static:consistent
+      - ./media:/backend/media:consistent
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    depends_on:
+      - backend
+    env_file:
+      - .env
+    ports:
+      - "${NGINX_EXTERNAL_PORT:-80}:80"
