@@ -1,0 +1,19 @@
+name: Docker-compose test
+
+on:
+  push:
+    branches: [ master ]
+
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Change directory to backend
+        run: cd backend
+      - name: Build the stack
+        run: docker-compose up -d --build
+ 
