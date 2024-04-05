@@ -16,6 +16,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Change directory to backend
         run: cd backend
+      - name: show files
+        run: ls 
       - name: Copy env
         run: cp .env.example .env
       - name: show files
